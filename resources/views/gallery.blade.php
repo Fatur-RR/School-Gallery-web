@@ -125,21 +125,24 @@
                 <h2 class="text-4xl font-serif tracking-tight text-gray-900 sm:text-4xl mb-8">Foto</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($fotos->sortByDesc('created_at') as $Get)
-              <!-- Card 1 -->
-              <div class="relative group w-full h-64 shadow-lg rounded-lg overflow-hidden">
-                <img src="{{ asset('storage/' . $Get->file) }}" alt="{{ $Get->judul }}" class="w-full h-full object-cover object-top rounded-lg">
-                <div class="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 rounded-lg p-4 transition-opacity duration-300">
-                    <h2 class="text-xl font-bold text-white">{{ $Get->judul }}</h2>
-                    <p class="text-white mt-2">{{ $Get->created_at }}</p>
-                    <!-- Tombol Detail -->
-                    <button data-id="{{ $Get->FotoID }}" class="mt-4 bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 transition duration-200 open-modal">
-                        Detail
-                    </button>
-                </div>
+                @foreach($fotos->sortByDesc('created_at') as $foto)
+                    <div class="relative group w-full h-64 shadow-lg rounded-lg overflow-hidden">
+                        <img src="{{ asset('storage/' . $foto->file) }}" alt="{{ $foto->judul }}"
+                             class="w-full h-full object-cover object-top rounded-lg">
+                        <div class="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 rounded-lg p-4 transition-opacity duration-300">
+                            <h2 class="text-xl font-bold text-white">{{ $foto->judul }}</h2>
+                            <p class="text-white mt-2">{{ $foto->created_at }}</p>
+                            <!-- Tombol Detail -->
+                            <button onclick="openDetailModal('{{ $foto->judul }}', '{{ asset('storage/' . $foto->file) }}', '{{ $foto->deskripsi }}', '{{ $foto->created_at }}', '{{ $foto->album->Nama ?? 'Tidak ada album' }}')"
+                                    class="mt-4 bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 transition duration-200">
+                                Detail
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
-
+            <!-- Modal Detail Foto -->
             <div id="detail-modal" class="fixed inset-0 hidden bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center">
                 <div class="bg-white p-6 rounded-lg max-w-lg w-full">
                     <h2 id="modal-title" class="text-2xl font-bold mb-4"></h2>
@@ -148,82 +151,56 @@
                     </div>
                     <p id="modal-description" class="text-gray-600 mb-4"></p>
                     <p id="modal-date" class="text-gray-500 text-sm mb-4"></p>
-                    <!-- Tambahkan elemen album secara permanen di modal -->
                     <p id="modal-album" class="text-gray-500 text-sm mb-4"></p>
-                    <button id="close-modal" class="mt-4 bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 transition duration-200">
-                        Close
+                    <button onclick="closeDetailModal()"
+                            class="mt-4 bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 transition duration-200">
+                        Tutup
                     </button>
                 </div>
             </div>
 
-
-
-
-              @endforeach
-
-
-            </div>
         </div>
     </div>
 
 </body>
 <script>
-const modal = document.getElementById('detail-modal');
-const modalTitle = document.getElementById('modal-title');
-const modalImage = document.getElementById('modal-image');
-const modalDescription = document.getElementById('modal-description');
-const modalDate = document.getElementById('modal-date');
-const closeModal = document.getElementById('close-modal');
-const detailButtons = document.querySelectorAll('.open-modal');
-const modalAlbum = document.getElementById('modal-album');
+function openDetailModal(judul, file, deskripsi, tanggal, albumNama) {
+    const modal = document.getElementById('detail-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalImage = document.getElementById('modal-image');
+    const modalDescription = document.getElementById('modal-description');
+    const modalDate = document.getElementById('modal-date');
+    const modalAlbum = document.getElementById('modal-album');
 
-detailButtons.forEach(button => {
-    button.addEventListener('click', function () {
-        const FotoID = this.getAttribute('data-id');
+    // Set konten modal
+    modalTitle.textContent = judul;
+    modalImage.src = file;
+    modalDescription.textContent = deskripsi || 'Tidak ada deskripsi';
+    modalDate.textContent = `Uploaded on: ${new Date(tanggal).toLocaleDateString()}`;
+    modalAlbum.textContent = `Album: ${albumNama}`;
 
-        // Fetch data from the server using AJAX
-        fetch(`/foto/${FotoID}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Update modal content with data
-                modalTitle.innerText = data.judul;
-                modalImage.src = `/storage/${data.file}`;
-                modalDescription.innerText = data.deskripsi || 'No description available';
-                modalDate.innerText = `Uploaded on: ${new Date(data.created_at).toLocaleDateString()}`;
+    // Tampilkan modal
+    modal.classList.remove('hidden');
+}
 
-                // Update nama album
-                modalAlbum.innerText = `Album: ${data.album}`;
-
-                // Show modal
-                modal.classList.remove('hidden');
-            })
-            .catch(error => console.error('Error fetching foto details:', error));
-    });
-});
-
-// Close modal when 'Close' button is clicked
-closeModal.addEventListener('click', () => {
+function closeDetailModal() {
+    const modal = document.getElementById('detail-modal');
     modal.classList.add('hidden');
-});
+}
 
-// Optional: Close modal when clicking outside the modal content
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        modal.classList.add('hidden');
+// Close modal when clicking outside
+document.getElementById('detail-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDetailModal();
     }
 });
 
+// Mobile menu functionality
+const mobileMenuButton = document.getElementById('mobile-menu-button');
+const mobileMenu = document.getElementById('mobile-menu');
 
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-  </script>
+mobileMenuButton.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+});
+</script>
 </html>

@@ -19,10 +19,11 @@ class FotoController extends Controller
         $search = $request->input('search');
 
         // Ambil semua foto dengan paginasi dan pencarian
-        $foto = foto::when($search, function ($query) use ($search) {
-            return $query->where('judul', 'like', "%{$search}%") // Ganti 'judul' sesuai dengan kolom yang ingin dicari
-                         ->orWhere('deskripsi', 'like', "%{$search}%"); // Ganti 'deskripsi' jika ingin mencari di kolom lain
-        })->paginate(10); // Ganti angka 10 dengan jumlah data per halaman yang diinginkan
+        $foto = Foto::with('album')  // Load relasi album
+            ->when($search, function ($query) use ($search) {
+                return $query->where('judul', 'like', "%{$search}%") // Ganti 'judul' sesuai dengan kolom yang ingin dicari
+                             ->orWhere('deskripsi', 'like', "%{$search}%"); // Ganti 'deskripsi' jika ingin mencari di kolom lain
+            })->get(); // Ganti angka 10 dengan jumlah data per halaman yang diinginkan
 
         // Default ke view gallery
         return view('gallery', [
