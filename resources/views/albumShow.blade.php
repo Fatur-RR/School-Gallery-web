@@ -17,6 +17,7 @@
 
 
         <title>SMKN 4 BOGOR</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/LOGO SMKN 4.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

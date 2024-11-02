@@ -9,6 +9,22 @@
                 .content-auto {
                     content-visibility: auto;
                 }
+
+                /* Animasi untuk menu mobile */
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
             }
 
             /* Atur lebar dan tinggi card */
@@ -17,6 +33,7 @@
 
 
         <title>SMKN 4 BOGOR</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/LOGO SMKN 4.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -143,9 +160,31 @@
         </div>
     </div>
 
+    <!-- Tambahkan script di bagian bawah body -->
+    <script>
+        // Ambil elemen yang diperlukan
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
 
+        // Tambahkan event listener untuk button
+        mobileMenuButton.addEventListener('click', () => {
+            // Toggle class hidden pada menu mobile
+            mobileMenu.classList.toggle('hidden');
 
+            // Optional: Animate the menu
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('animate-fade-in');
+            } else {
+                mobileMenu.classList.remove('animate-fade-in');
+            }
+        });
 
-
+        // Optional: Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

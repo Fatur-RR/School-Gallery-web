@@ -9,14 +9,27 @@
                 .content-auto {
                     content-visibility: auto;
                 }
+
+                /* Animasi untuk menu mobile */
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
             }
-
-            /* Atur lebar dan tinggi card */
-
         </style>
 
-
         <title>SMKN 4 BOGOR</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/LOGO SMKN 4.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -121,35 +134,68 @@
     </div>
 
     <div class="container mx-auto p-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8">
-        @foreach($agendas as $agenda)
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-6 border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-br from-gray-100 to-white hover:border-indigo-500">
-            <div class="p-4">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">{{ $agenda->judul }}</h2>
-                <p class="text-gray-600 text-base mb-6">{{ $agenda->isi }}</p>
-                <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $agenda->status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ $agenda->status }}</p>
-                <p class="text-gray-700 text-lg mb-4">Tanggal: {{ \Carbon\Carbon::parse($agenda->updated_at)->format('d M Y') }}</p>
-                <button onclick="openModal({{ $agenda->id }})" class="inline-block mt-4 bg-indigo-600 text-white text-base font-semibold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-200">
-                    Detail
-                </button>
-            </div>
-        </div>
+        <!-- Grid yang responsif -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+            @foreach($agendas as $agenda)
+            <div class="bg-white shadow-lg rounded-lg p-4 md:p-6 mb-4 md:mb-6 border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-br from-gray-100 to-white hover:border-indigo-500">
+                <div class="p-2 md:p-4">
+                    <!-- Judul dengan ukuran responsif -->
+                    <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-gray-800">{{ $agenda->judul }}</h2>
 
-        <div id="modal-{{ $agenda->id }}"
-            class="fixed inset-0 hidden z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">{{ $agenda->judul }}</h2>
-                <p class="text-gray-700 mb-4">{{ $agenda->isi }}</p>
-                <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $agenda->status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ $agenda->status }}</p>
-                <p class="text-sm text-gray-500 mb-4">Diperbarui pada: {{ $agenda->updated_at }}</p>
-                <button onclick="closeModal({{ $agenda->id }})"
-                    class="mt-4 bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-200">Tutup</button>
+                    <!-- Isi dengan line-clamp untuk membatasi jumlah baris -->
+                    <p class="text-gray-600 text-sm md:text-base mb-3 md:mb-6 line-clamp-3">{{ $agenda->isi }}</p>
+
+                    <!-- Status badge -->
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <p class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $agenda->status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $agenda->status }}
+                        </p>
+                        <p class="text-gray-700 text-sm md:text-base">
+                            {{ \Carbon\Carbon::parse($agenda->updated_at)->format('d M Y') }}
+                        </p>
+                    </div>
+
+                    <!-- Tombol detail yang responsif -->
+                    <button onclick="openModal({{ $agenda->id }})"
+                        class="w-full md:w-auto inline-block mt-2 md:mt-4 bg-indigo-600 text-white text-sm md:text-base font-semibold py-2 md:py-3 px-4 md:px-6 rounded-full hover:bg-indigo-700 transition duration-200">
+                        Detail
+                    </button>
+                </div>
             </div>
+
+            <!-- Modal yang responsif -->
+            <div id="modal-{{ $agenda->id }}"
+                class="fixed inset-0 hidden z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                <div class="bg-white rounded-lg shadow-lg p-4 md:p-6 w-full max-w-lg mx-4 relative max-h-[90vh] overflow-y-auto">
+                    <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-800">{{ $agenda->judul }}</h2>
+                    <p class="text-gray-700 text-sm md:text-base mb-3 md:mb-4">{{ $agenda->isi }}</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <p class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $agenda->status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $agenda->status }}
+                        </p>
+                        <p class="text-xs md:text-sm text-gray-500">
+                            Diperbarui pada: {{ $agenda->updated_at }}
+                        </p>
+                    </div>
+                    <button onclick="closeModal({{ $agenda->id }})"
+                        class="w-full md:w-auto mt-4 bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-200">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
-</div>
 
+    <!-- Search bar yang responsif -->
+    <form class="mt-8 px-4 md:px-8" method="GET" action="{{ route('agenda') }}">
+        <input class="w-full px-4 md:px-6 py-3 md:py-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:border-indigo-500 transition-all duration-300"
+               type="text"
+               name="search"
+               value="{{ request('search') }}"
+               placeholder="Cari agenda..."
+               aria-label="Search">
+    </form>
 
 </body>
 <script>
@@ -159,6 +205,37 @@
 
     function closeModal(id) {
         document.getElementById('modal-' + id).classList.add('hidden');
+    }
+
+    // Script untuk menu mobile
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+
+        if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('animate-fade-in');
+        } else {
+            mobileMenu.classList.remove('animate-fade-in');
+        }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modals = document.querySelectorAll('[id^="modal-"]');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
     }
 </script>
 </html>

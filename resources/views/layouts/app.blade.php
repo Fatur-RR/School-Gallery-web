@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Dashboard - SMKN 4 Bogor</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/LOGO SMKN 4.png') }}">
+
     <style type="text/tailwindcss">
         @layer utilities {
             .content-auto {
@@ -13,8 +17,16 @@
             }
         }
 
-        /* Atur lebar dan tinggi card */
+        @media (max-width: 768px) {
+            .sidebar-mobile {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
 
+            .sidebar-mobile.active {
+                transform: translateX(0);
+            }
+        }
     </style>
 
     <!-- Fonts -->
@@ -28,17 +40,14 @@
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
-
-
         <div class="flex">
-              <!-- Pastikan Anda hanya menyertakan navigasi satu kali -->
-             @include('layouts.navigation')
+            <!-- Pastikan Anda hanya menyertakan navigasi satu kali -->
+            @include('layouts.navigation')
 
             <!-- Main Content -->
             <main class="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-screen">
                 {{ $slot }}
             </main>
-
         </div>
     </div>
 </body>
